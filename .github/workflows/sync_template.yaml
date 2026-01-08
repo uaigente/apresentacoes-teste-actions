@@ -20,37 +20,39 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Add upstream remote
-        run: |
-          git remote add upstream git@github.com:ziguraty/repo-template.git || true
-          git fetch upstream
+      - name: Configure git
+        uses: qoomon/actions--setup-git@v1
 
       - name: Check for upstream changes
         id: diff
         run: |
+          git remote add upstream https://github.com/ziguraty/repo-template.git || true
+          git fetch upstream
           if git log HEAD..upstream/main --oneline | grep .; then
             echo "changes=true" >> "$GITHUB_OUTPUT"
           else
             echo "changes=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create sync branch and merge
+      - name: Merge upstream changes
         if: steps.diff.outputs.changes == 'true'
         run: |
-          BRANCH="sync-template-$(date +%Y%m%d)"
-          git checkout -b "$BRANCH"
           git merge upstream/main --no-edit
-
-          git push origin "$BRANCH"
 
       - name: Create Pull Request
         if: steps.diff.outputs.changes == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: ${{ github.ref_name }}
+          base: main
+          delete-branch: true
           title: "Sync template updates"
           body: |
-            This PR syncs the latest changes from the template repository.
+            🤖 **Automated template sync**
 
-            Source: `upstream/main`
-          base: main
+            This pull request was automatically created by the
+            **`${{ github.workflow }}`** workflow.
+
+            🔗 Run details:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            📦 Source: `upstream/main`
