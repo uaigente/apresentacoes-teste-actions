@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  sync:
+  sync_template_from_upstream:
     runs-on: ubuntu-latest
 
     steps:
@@ -93,7 +93,7 @@ jobs:
       - name: Workflow failure notification
         uses: JasonEtco/create-an-issue@v2
         if: failure()
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          filename: .github/workflow-failure.md
+          filename: .github/sync_template_failure.md
