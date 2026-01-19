@@ -34,8 +34,8 @@ jobs:
           data = tomllib.loads(Path("pyproject.toml").read_text())
 
           upstream = (
-              data
-              .get("tool", {})
+              # data
+              # .get("tool", {})
               .get("repo-template", {})
               .get("upstream", "")
               .strip()
